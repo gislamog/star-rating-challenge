@@ -1,5 +1,28 @@
 import { test, expect } from '@playwright/test';
 
+// ===================== PERFORMANCE TEST
+
+test('Page components render in less than 100ms', async ({ page }) => {
+	await page.goto('/');
+
+	// start performance measurement
+	const startTime = await page.evaluate(() => performance.now());
+
+	// wait for all 3 components to be rendered
+	await page.locator('.star-rating').nth(2).waitFor();
+
+	// stop performance measurement
+	const endTime = await page.evaluate(() => performance.now());
+
+	const performanceTime = endTime - startTime;
+
+	//console.log("render time: " + performanceTime)
+
+	// ensure performance is in acceptable limit
+	expect(performanceTime).toBeLessThan(100);
+});
+
+
 // ===================== SINGULAR TESTS, COVERING SPECIFIC COMPONENTS AND FUNTIONALITIES 
 
 test('First StarRating has 3 stars after selecting 3rd star, and becomes non-clickable', async ({ page }) => {
