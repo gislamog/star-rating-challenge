@@ -1,1 +1,13 @@
 @import 'tailwindcss';
+
+.item-container {
+    @apply flex items-center gap-4 p-4 bg-white shadow-md rounded-lg;
+}
+
+.image-container {
+    @apply w-18 h-18 object-contain;
+}
+
+.star-rating-container {
+    @apply flex-1 flex justify-center;
+}

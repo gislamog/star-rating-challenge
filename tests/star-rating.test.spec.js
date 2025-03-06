@@ -19,7 +19,28 @@ test('First StarRating has 3 stars after selecting 3rd star, and becomes non-cli
 
 	// check that 3rd star is clicked
 	const output = firstRating.locator('.selected-rating');
-	await expect(output).toHaveText('3');
+	await expect(output).toHaveText('(3 stars)');
+});
+
+
+test('First StarRating has 1 star after selecting 1st star, and becomes non-clickable', async ({ page }) => {
+	await page.goto('/');
+
+	// locate first StarRating
+	const firstRating = page.locator('.star-rating').nth(0);
+
+	// click 3rd star
+	await firstRating.locator('button').nth(0).click();
+
+	// ensure other stars are not clickable
+	for (let i = 0; i < 5; i++) {
+		const isDisabled = await firstRating.locator('button').nth(i).isDisabled();
+		expect(isDisabled).toBe(true);
+	}
+
+	// check that 1st star is clicked
+	const output = firstRating.locator('.selected-rating');
+	await expect(output).toHaveText('(1 star)');
 });
 
 
@@ -32,7 +53,7 @@ test('First StarRating shows rating of null when no rating is given', async ({ p
 
 	// check for rating of null
 	const output = firstRating.locator('.selected-rating');
-	await expect(output).toHaveText('null');
+	await expect(output).toHaveText('(null)');
 });
 
 
@@ -48,7 +69,7 @@ test('First StarRating does not update rating when hovering over 4 stars', async
 
 	// ensure rating is still null
 	const output = firstRating.locator('.selected-rating');
-	await expect(output).toHaveText('null');
+	await expect(output).toHaveText('(null)');
 });
 
 
@@ -70,7 +91,7 @@ test('Second StarRating has 2 stars after selecting 2nd star and becomes non-cli
 
 	// check that 2nd star is clicked
 	const output = secondRating.locator('.selected-rating');
-	await expect(output).toHaveText('2');
+	await expect(output).toHaveText('(2 stars)');
 });
 
 
@@ -186,7 +207,7 @@ test('Third StarRating shows rating of 5 after 5th star is clicked', async ({ pa
 
 	// check for rating of 5
 	const output = thirdRating.locator('.selected-rating');
-	await expect(output).toHaveText('5');
+	await expect(output).toHaveText('(5 stars)');
 });
 
 
@@ -216,7 +237,7 @@ test('Third StarRating behaves correctly (null initial state, hover 3rd star, cl
 
 	// click 3rd star and check recorded rating
 	await thirdRating.locator('button').nth(2).click();
-	await expect(output).toHaveText('3');
+	await expect(output).toHaveText('(3 stars)');
 
 	// try clicking other stars and verify locked state
 	for (let i = 0; i < 5; i++) {
@@ -239,7 +260,6 @@ test('ALL components output the correct rating after clicking each star, includi
 
 	// iterate through each component
 	for (let i = 0; i < starRatingCount; i++) {
-		//console.log(`Testing StarRating #${i + 1}`);
 
 		// iterate 6 times per component: null, then 1-5 stars
 		for (let j = 0; j < 6; j++) {
@@ -252,12 +272,11 @@ test('ALL components output the correct rating after clicking each star, includi
 			// click star after null check
 			if (j > 0) {
 				await currentRating.locator('button').nth(j - 1).click();
-				//console.log(`\tClicked star #${j}`)
 			}
 
 			// get output
 			const output = page.locator('.selected-rating').nth(i);
-			const expectedOutput = j === 0 ? 'null' : `${j}`;
+			const expectedOutput = j === 0 ? '(null)' : j === 1 ? '(1 star)' : `(${j} stars)`;
 
 			await expect(output).toHaveText(expectedOutput);
 		}
